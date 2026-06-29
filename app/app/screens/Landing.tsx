@@ -374,7 +374,7 @@ export default function Landing({ navigation }: Props) {
              <View style={styles.alertHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Ionicons name="warning" size={24} color={APP_CONFIG.colors.warning} />
-                <Text style={styles.alertTitle}>Solar Activity Alert</Text>
+                <Text style={styles.alertTitle}>SoLEXS/HEL1OS Alert</Text>
               </View>
               <View style={[
                 styles.alertBadge, 
@@ -389,7 +389,7 @@ export default function Landing({ navigation }: Props) {
 
             <Text style={styles.alertText}>
               {liveData.alert_level} probability ({(liveData.flare_probability * 100).toFixed(1)}%) of solar flare. 
-              {liveData.alert_level === 'HIGH' ? ' Immediate impact possible.' : ' No immediate impact expected.'}
+              {liveData.alert_level === 'HIGH' ? ' X-ray flux anomalies detected.' : ' Nominal SoLEXS/HEL1OS flux.'}
             </Text>
 
             <View style={styles.alertFooter}>
@@ -457,7 +457,7 @@ export default function Landing({ navigation }: Props) {
           <View style={styles.rowHeader}>
             <View style={styles.sectionHeader}>
               <Ionicons name="analytics" size={20} color={APP_CONFIG.colors.info} />
-              <Text style={styles.subHeading}>Aditya-L1 Sensors</Text>
+              <Text style={styles.subHeading}>Aditya-L1 Secondary Payloads</Text>
             </View>
             <TouchableOpacity style={styles.viewAllBtn}>
               <Text style={styles.viewAll}>View all</Text>
@@ -477,7 +477,7 @@ export default function Landing({ navigation }: Props) {
           <View style={[styles.rowHeader, { marginTop: APP_CONFIG.spacing.xl }]}>
             <View style={styles.sectionHeader}>
               <Ionicons name="trending-up" size={20} color={APP_CONFIG.colors.success} />
-              <Text style={styles.subHeading}>Trending Solar Activity</Text>
+              <Text style={styles.subHeading}>X-ray Flux Trend</Text>
             </View>
           </View>
           {liveData.trending?.map(renderTrendingItem)}
