@@ -23,43 +23,43 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Blog'>;
 const blogArticles = [
   {
     id: '1',
-    title: 'Understanding Coronal Mass Ejections (CMEs)',
-    excerpt: 'A comprehensive guide to CMEs and their impact on space weather...',
-    author: 'Dr. Sarah Johnson',
-    date: 'Dec 15, 2024',
-    readTime: '5 min read',
-    category: 'Research',
-    image: require('../../assets/graph_01.png'),
+    title: 'Aditya-L1 SoLEXS: Ground Calibration and In-flight Performance',
+    excerpt: 'Comprehensive paper on SoLEXS performance, cross-calibration with GOES/XRS, and solar flare studies.',
+    author: 'arXiv: 2509.26292',
+    date: 'Sep 2025',
+    readTime: 'Research Paper',
+    category: 'SoLEXS',
+    image: require('../../assets/screenshot2.png'),
   },
   {
     id: '2',
-    title: 'Aditya-L1 Mission: Latest Discoveries',
-    excerpt: 'Recent findings from the Aditya-L1 solar mission and their implications...',
-    author: 'ISRO Team',
-    date: 'Dec 12, 2024',
-    readTime: '8 min read',
-    category: 'Mission',
-    image: require('../../assets/graph_02.png'),
+    title: 'HEL1OS Instrument Paper: Hard X-ray Spectrometer',
+    excerpt: 'Detailed description of HEL1OS and its synergy with SoLEXS for studying thermal vs. non-thermal flare emissions.',
+    author: 'arXiv: 2512.12679',
+    date: 'Dec 2025',
+    readTime: 'Research Paper',
+    category: 'HEL1OS',
+    image: require('../../assets/screenshot3.png'),
   },
   {
     id: '3',
-    title: 'Solar Wind Particle Analysis',
-    excerpt: 'Deep dive into solar wind particle behavior and detection methods...',
-    author: 'Prof. Michael Chen',
-    date: 'Dec 10, 2024',
-    readTime: '6 min read',
+    title: 'Iron Fluorescence in X-class Solar Flares: SoLEXS Observations',
+    excerpt: 'Analysis of spectral features during dozen of X-class flares observed by Aditya-L1. Essential for ML feature engineering.',
+    author: 'Solar Physics',
+    date: 'May 2025',
+    readTime: 'Research Paper',
     category: 'Analysis',
-    image: require('../../assets/graph_03.png'),
+    image: require('../../assets/screenshot1.png'),
   },
   {
     id: '4',
-    title: 'Space Weather Forecasting',
-    excerpt: 'How we predict and prepare for solar storms and their effects...',
-    author: 'Space Weather Center',
-    date: 'Dec 8, 2024',
-    readTime: '7 min read',
-    category: 'Forecasting',
-    image: require('../../assets/graph_01.png'),
+    title: 'Coronal Mass Ejections (Secondary Target)',
+    excerpt: 'How we track CMEs via SWIS-ASPEX while focusing on primary Solar Flare predictions.',
+    author: 'SolarSim Team',
+    date: 'Jan 2026',
+    readTime: '5 min read',
+    category: 'CME',
+    image: require('../../assets/screenshot4.png'),
   },
 ];
 
@@ -121,7 +121,7 @@ export default function BlogScreen({ navigation }: Props) {
       <SafeAreaView style={[styles.safeArea, { backgroundColor: 'transparent' }]}>
         <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
         <Header 
-          title="Solar Blog" 
+          title="Scientific Literature" 
           showBackButton={true}
           onBackPress={handleBackPress}
         />
@@ -143,7 +143,7 @@ export default function BlogScreen({ navigation }: Props) {
           <View style={styles.categoriesSection}>
             <Text style={styles.sectionTitle}>Categories</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
-              {['All', 'Research', 'Mission', 'Analysis', 'Forecasting'].map((category) => (
+              {['All', 'SoLEXS', 'HEL1OS', 'Analysis', 'CME'].map((category) => (
                 <TouchableOpacity
                   key={category}
                   style={styles.categoryChip}
