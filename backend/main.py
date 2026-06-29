@@ -180,15 +180,20 @@ def fetch_live_data():
         plt.style.use('dark_background')
         plt.rcParams.update({'font.size': 12, 'axes.linewidth': 1.5})
         plt.figure(figsize=(8, 4))
-        plt.plot(fused['time'], fused['soft_flux'], label='Soft (0.1-0.8nm)', color='#00ffcc', linewidth=2)
-        plt.plot(fused['time'], fused['hard_flux'], label='Hard (0.05-0.4nm)', color='#ff3b3b', linewidth=2)
+        plt.plot(fused['time'], fused['soft_flux'], label='SoLEXS Proxy (0.1-0.8nm)', color='#00ffcc', linewidth=2)
+        plt.plot(fused['time'], fused['hard_flux'], label='HEL1OS Proxy (0.05-0.4nm)', color='#ff3b3b', linewidth=2)
         plt.yscale('log')
         
-        # Calculate dynamic limits to guarantee the curves never clip the top or bottom
+        # Add Standard Flare Class Reference Lines for Scientific Accuracy
+        flare_classes = {'X': 1e-4, 'M': 1e-5, 'C': 1e-6, 'B': 1e-7, 'A': 1e-8}
+        for cls_name, flux_val in flare_classes.items():
+            plt.axhline(y=flux_val, color='#888888', linestyle='--', alpha=0.3, linewidth=1)
+            # Add text label slightly above the line
+            plt.text(fused['time'].iloc[1], flux_val * 1.2, f'{cls_name}-Class', color='#aaaaaa', fontsize=9, alpha=0.8)
+
+        # Standardize scientific limits instead of arbitrary bounding
         y_max = fused['soft_flux'].max()
-        y_min = fused['hard_flux'].min()
-        if y_max > 0 and y_min > 0:
-            plt.ylim(y_min * 0.1, y_max * 10.0) # Add a full log-order of magnitude padding
+        plt.ylim(1e-9, max(1e-3, y_max * 5.0))
             
         plt.title('Live Satellite X-ray Flux', fontsize=16, pad=15)
         plt.ylabel('Watts / m²', fontsize=14)
