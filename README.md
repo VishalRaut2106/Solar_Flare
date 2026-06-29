@@ -65,3 +65,46 @@ To ensure accessibility and reliability during the evaluation phase, the system 
 ## 6. Conclusion
 SolarSim demonstrates a cohesive fusion of modern deep learning and distributed systems engineering. By treating space weather forecasting not just as a data science problem, but as a full-stack engineering challenge, this project successfully delivers actionable, real-time intelligence to end-users with zero localized computational overhead.
 
+
+
+---
+
+## 7. ISRO BAH 2026 - Idea Submission Presentation Mapping
+This section maps the official presentation template slides directly to our implementation to assist the team in generating the final pitch deck.
+
+### Slide 1 & 2: Team Introduction
+*   **Team Name:** [Your Team Name]
+*   **Problem Statement:** 15: Forecasting and Now-casting of Solar Flares
+*   **Team Leader & Members:** [List your team members and colleges]
+
+### Slide 3: Opportunity & USP
+*   **How different is it:** Most existing systems rely on slow, monolithic terrestrial supercomputers that update every 6 hours. SolarSim brings predictions directly to edge devices (mobile phones) via a lightweight Digital Twin and an API that operates continuously with zero manual intervention.
+*   **How it solves the problem:** By constantly ingesting proxy telemetry and passing it through our pre-trained LSTM, we can predict flare anomalies minutes before peak X-ray flux hits Earth, protecting satellite electronics.
+*   **USP (Unique Selling Proposition):** 
+    1. Real-time Digital Twin simulation of Aditya-L1 data.
+    2. Zero-latency mobile monitoring app built in React Native.
+    3. Fully automated 24/7 cloud backend.
+
+### Slide 4: List of Features
+*   **Live Telemetry Dashboard:** Displays simulated SWIS and PAPA sensor data natively on iOS and Android.
+*   **Flare Probability Engine:** Machine Learning probability gauge constantly evaluating risk from 0% to 100%.
+*   **Interactive Lightcurves:** Rendered 300 DPI Matplotlib graphs streamed dynamically to the app.
+*   **Resilient Connectivity:** Auto-reconnecting fallback architecture.
+
+### Slide 5 & 7: Process Flow & Architecture
+*   *(Use the details from Section 2 of this README)*
+*   **Data Source:** NOAA GOES-16 proxy -> **Cloud:** Render FastAPI backend -> **Inference:** PyTorch LSTM -> **Client:** Expo React Native App.
+
+### Slide 6: Wireframes / Mock diagrams
+*   *(Insert screenshots of the beautifully styled Dark Mode React Native App you built, highlighting the green Nominal states and red Anomaly states).*
+
+### Slide 8: Technologies Used
+*   **Machine Learning:** PyTorch, Pandas, Numpy, Scikit-Learn.
+*   **Backend Engineering:** Python, FastAPI, Uvicorn, Matplotlib.
+*   **Mobile Frontend:** React Native, Expo, TypeScript, Axios.
+*   **Deployment Operations:** Render.com, Expo Application Services (EAS), GitHub CI/CD.
+
+### Slide 9: Estimated Implementation Cost
+*   **Current Cost:** .00 (Hosted entirely on Render Free Tier and Expo EAS Free Tier during prototyping).
+*   **Production Scaling:** ~/month for dedicated AWS EC2/Render instances and increased NOAA API rate-limiting thresholds.
+
