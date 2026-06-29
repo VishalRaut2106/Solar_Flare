@@ -12,13 +12,11 @@ export const API_CONFIG = {
   // Hugging Face Inference API
   HUGGING_FACE: {
     API_KEY: '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', // Get from Hugging Face
-    MODEL_URL: 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-small',
+    MODEL_URL: 'https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta',
     // Alternative models you can use:
+    // - 'HuggingFaceH4/zephyr-7b-beta' (highly intelligent, follows instructions well)
     // - 'microsoft/DialoGPT-small' (conversational, smaller, reliable)
     // - 'distilgpt2' (faster, smaller, reliable)
-    // - 'gpt2' (general purpose, reliable)
-    // - 'EleutherAI/gpt-neo-125M' (good balance)
-    // - 'microsoft/DialoGPT-medium' (conversational, medium)
   },
   
   // Request settings
@@ -27,18 +25,17 @@ export const API_CONFIG = {
   
   // Model parameters - simplified for better compatibility
   MODEL_PARAMS: {
-    max_length: 100,
-    temperature: 0.8,
+    max_new_tokens: 300,
+    temperature: 0.7,
     do_sample: true,
-    top_p: 0.9,
+    top_p: 0.95,
     num_return_sequences: 1,
-    pad_token_id: 50256, // GPT-2 pad token
   },
   
   // Web search settings
   WEB_SEARCH: {
     max_results: 3,
-    search_domain: 'solar physics space weather', // Optional: restrict search domain
+    search_domain: 'solar flare CME space weather ISRO Aditya-L1', // Highly optimized search context
     include_images: true, // Enable image search results
     image_size: 'medium', // 'small', 'medium', 'large'
     search_type: 'image', // 'web', 'image', or 'news'

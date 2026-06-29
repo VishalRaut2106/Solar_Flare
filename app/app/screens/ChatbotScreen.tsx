@@ -201,9 +201,12 @@ export default function ChatbotScreen({ navigation }: Props) {
       // Otherwise, try the online model as fallback
       logger.info('Attempting online model as fallback', {}, 'ChatbotScreen');
       
+      // Format the prompt for Zephyr-7b or similar instruct models
+      const formattedPrompt = `<|system|>\nYou are an expert AI assistant specializing in solar physics, solar flares, Coronal Mass Ejections (CMEs), space weather, and the ISRO Aditya-L1 mission. Provide concise, scientifically accurate answers.</s>\n<|user|>\n${query}</s>\n<|assistant|>\n`;
+
       // Prepare the request payload
       const payload = {
-        inputs: query,
+        inputs: formattedPrompt,
         parameters: {
           ...API_CONFIG.MODEL_PARAMS,
           return_full_text: false, // Only return the generated part

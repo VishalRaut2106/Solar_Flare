@@ -710,8 +710,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   cmePercentage: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: 'bold',
     color: APP_CONFIG.colors.success,
   },
   actions: {

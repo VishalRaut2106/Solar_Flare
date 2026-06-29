@@ -6,7 +6,7 @@ export const APP_CONFIG = {
     primary: '#ffffff',
     secondary: '#1a1a1a',
     accent: '#00c6ff',
-    success: '#00ff7f',
+    success: '#00cc66',
     warning: '#ff9500',
     error: '#ff3b3b',
     info: '#00c6ff',
