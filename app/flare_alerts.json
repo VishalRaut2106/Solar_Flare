@@ -1,0 +1,7 @@
+{
+  "timestamp": "2026-06-25 23:59:59",
+  "flare_probability": 0.04452262818813324,
+  "alert_level": "LOW",
+  "lead_time_mins": 15,
+  "method": "PyTorch LSTM Forecast (10-Day Authentic Fused)"
+}
