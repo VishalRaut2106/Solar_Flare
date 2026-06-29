@@ -14,9 +14,24 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
+import io
 
 app = FastAPI()
+
+@app.get("/", response_class=HTMLResponse)
+def root():
+    return """
+    <html>
+        <head><title>SolarSim API</title></head>
+        <body style="background-color: #121212; color: #00ffcc; font-family: monospace; padding: 50px; text-align: center;">
+            <h1>🚀 SolarSim Live Backend is RUNNING!</h1>
+            <p>This is the digital twin inference engine for Aditya-L1 telemetry.</p>
+            <p>Status Endpoint: <a href="/api/v1/status" style="color:#fff;">/api/v1/status</a></p>
+            <p>Graph Endpoint: <a href="/api/v1/lightcurve" style="color:#fff;">/api/v1/lightcurve</a></p>
+        </body>
+    </html>
+    """
 
 app.add_middleware(
     CORSMiddleware,
