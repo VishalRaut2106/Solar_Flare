@@ -46,6 +46,12 @@
       "astronomy"
     ],
     "author": "SolarSim Team",
-    "privacy": "public"
+    "privacy": "public",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b0c15751-0f60-4af9-9bef-818826b19eb4"
+      }
+    }
   }
 }

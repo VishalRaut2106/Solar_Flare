@@ -23,7 +23,7 @@
 
 Space weather anomalies, specifically **Solar Flares**, pose critical risks to modern satellite electronics. **SolarSim** is a full-stack, autonomous early-warning system designed to tackle ISRO Problem Statement 15. 
 
-It acts as a **Digital Twin**, processing proxy dual-band X-ray data (Soft and Hard X-rays) to emulate Aditya-L1's **SoLEXS** and **HEL1OS** payloads. The system utilizes a PyTorch Long Short-Term Memory (LSTM) neural network to analyze time-series flux gradients, generating an anomaly probability tensor. This data is streamed in real-time to a native mobile application, bringing deep-space telemetry directly to the edge.
+It acts as a **Deterministic Digital Twin**, processing proxy dual-band X-ray data (Soft and Hard X-rays) to emulate Aditya-L1's **SoLEXS** and **HEL1OS** payloads. The system utilizes a PyTorch Long Short-Term Memory (LSTM) neural network to analyze time-series flux gradients, generating an anomaly probability tensor. This data mathematically drives the simulated secondary payloads and is streamed in real-time to a native mobile application, bringing deep-space telemetry directly to the edge.
 
 While the primary directive is detecting high-energy X-ray signatures for Solar Flares, SolarSim simultaneously monitors secondary payloads (SWIS & PAPA) for tracking Coronal Mass Ejections (CMEs).
 
@@ -33,9 +33,9 @@ While the primary directive is detecting high-energy X-ray signatures for Solar 
 
 - **Algorithmic Nowcasting:** Instantly detects abrupt gradients in X-ray light curves to catalog active flares.
 - **LSTM Forecasting:** Neural network continuously analyzes combined soft/hard X-ray flux to predict flare probability with a 15–30 minute lead time.
-- **Cross-Platform Mobile Edge-Client:** A beautiful, dark-mode React Native application deployable to iOS and Android.
-- **Zero-Latency Graphing:** Matplotlib lightcurves are rendered mathematically on the cloud backend and streamed to the app as lightweight image buffers, saving mobile battery and CPU overhead.
-- **Network Resilience:** Intelligent UI fallbacks automatically preserve the last-known safe data state if the satellite uplink drops.
+- **On-Call Alert Pager:** A beautiful, dark-mode React Native application designed specifically for engineers away from their command centers, deployable to iOS and Android.
+- **Server-Side Rendered (SSR) Telemetry:** Matplotlib lightcurves are rendered mathematically on the cloud backend and streamed to the app as lightweight image buffers, saving mobile battery and CPU overhead while preserving scientific accuracy.
+- **Network Resilience:** Intelligent UI gracefully handles Render.com cold-starts and preserves the last-known safe data state if the satellite uplink drops.
 
 ---
 

@@ -52,33 +52,45 @@ export default function Landing({ navigation }: Props) {
       { id: "3", name: "Particle Density", change: "↑ 5.4 cm³", trendUp: true }
     ]
   });
-  const [lightcurveUrl, setLightcurveUrl] = useState("http://10.76.241.10:8000/api/v1/lightcurve");
+  const [lightcurveUrl, setLightcurveUrl] = useState("https://solar-flare-53ly.onrender.com/api/v1/lightcurve");
   const [countdown, setCountdown] = useState(60);
   const [isGraphModalVisible, setGraphModalVisible] = useState(false);
   const [isTelemetryModalVisible, setTelemetryModalVisible] = useState(false);
-  const [isConnected, setIsConnected] = useState(true);
+  const [connectionState, setConnectionState] = useState<'booting_cloud' | 'connected' | 'disconnected'>('booting_cloud');
+  const [hasAcknowledgedAlert, setHasAcknowledgedAlert] = useState(false);
 
   useEffect(() => {
     // Fetch live data from backend
     const fetchData = async () => {
       try {
-        const res = await fetch("http://10.76.241.10:8000/api/v1/status", {
+        const res = await fetch("https://solar-flare-53ly.onrender.com/api/v1/status", {
           headers: {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
             'Expires': '0'
           }
         });
-        const data = await res.json();
+        
+        const text = await res.text();
+        if (text.startsWith('<')) {
+          setConnectionState('booting_cloud');
+          return;
+        }
+        
+        const data = JSON.parse(text);
         if (data.timestamp) {
           setLiveData(data);
-          setIsConnected(true);
+          setConnectionState('connected');
+          // Reset acknowledgment if alert level drops
+          if (!data.cme_alert && data.alert_level !== 'HIGH') {
+            setHasAcknowledgedAlert(false);
+          }
           // Force image refresh by appending a timestamp query param
-          setLightcurveUrl(`http://10.76.241.10:8000/api/v1/lightcurve?t=${new Date().getTime()}`);
+          setLightcurveUrl(`https://solar-flare-53ly.onrender.com/api/v1/lightcurve?t=${new Date().getTime()}`);
         }
       } catch (err) {
         console.log("Failed to fetch live data", err);
-        setIsConnected(false);
+        setConnectionState('disconnected');
       }
     };
     
@@ -138,7 +150,7 @@ export default function Landing({ navigation }: Props) {
     handleNavigation('Search');
   };
 
-  const handleSimulationPress = () => {
+  const handleTelemetryPress = () => {
     setTelemetryModalVisible(true);
   };
 
@@ -259,13 +271,21 @@ export default function Landing({ navigation }: Props) {
         <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
         <BlurView intensity={40} tint="dark" style={styles.blurTop} />
         
-        {!isConnected && (
+        {connectionState === 'disconnected' && (
           <View style={{ backgroundColor: APP_CONFIG.colors.error, padding: 8, alignItems: 'center', zIndex: 100 }}>
-            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>DISCONNECTED: Live Data Feed Lost. Retrying...</Text>
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>CONNECTION LOST: Attempting to re-establish proxy link...</Text>
+          </View>
+        )}
+        {connectionState === 'booting_cloud' && (
+          <View style={{ backgroundColor: APP_CONFIG.colors.warning, padding: 8, alignItems: 'center', zIndex: 100 }}>
+            <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 12 }}>Initializing Cloud Inference Engine (Cold Start)...</Text>
           </View>
         )}
 
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent} 
+          showsVerticalScrollIndicator={false}
+        >
           {/* Enhanced Header */}
           <Animated.View 
             style={[
@@ -372,9 +392,9 @@ export default function Landing({ navigation }: Props) {
             ]}
           >
              <View style={styles.alertHeader}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, paddingRight: 10 }}>
                 <Ionicons name="warning" size={24} color={APP_CONFIG.colors.warning} />
-                <Text style={styles.alertTitle}>SoLEXS/HEL1OS Alert</Text>
+                <Text style={styles.alertTitle} numberOfLines={1} adjustsFontSizeToFit>SoLEXS/HEL1OS Alert</Text>
               </View>
               <View style={[
                 styles.alertBadge, 
@@ -388,8 +408,12 @@ export default function Landing({ navigation }: Props) {
             </View>
 
             <Text style={styles.alertText}>
-              {liveData.alert_level} probability ({(liveData.flare_probability * 100).toFixed(1)}%) of solar flare. 
-              {liveData.alert_level === 'HIGH' ? ' X-ray flux anomalies detected.' : ' Nominal SoLEXS/HEL1OS flux.'}
+              {liveData.alert_level} probability ({(liveData.flare_probability * 100).toFixed(1)}%) of solar flare.{"\n"}
+              {liveData.alert_level === 'HIGH' ? (
+                <Text style={{ fontSize: 14, color: APP_CONFIG.colors.error, fontWeight: 'bold' }}>X-ray flux anomalies detected.</Text>
+              ) : (
+                <Text style={{ fontSize: 11, color: APP_CONFIG.colors.text.tertiary }}>Nominal SoLEXS/HEL1OS flux.</Text>
+              )}
             </Text>
 
             <View style={styles.alertFooter}>
@@ -414,7 +438,7 @@ export default function Landing({ navigation }: Props) {
             ...APP_CONFIG.shadows.medium,
           }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
             <View style={[styles.cardHeader, { padding: 16, marginBottom: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
-              <Text style={[styles.cardTitle, { color: '#ffffff', fontSize: 16, fontWeight: 'bold' }]}>Live Solar Flux</Text>
+              <Text style={[styles.cardTitle, { color: '#ffffff', fontSize: 16, fontWeight: 'bold' }]}>SSR Telemetry Stream</Text>
               <View style={{ backgroundColor: APP_CONFIG.colors.overlay.medium, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(0, 198, 255, 0.3)' }}>
                 <Text style={{ color: APP_CONFIG.colors.accent, fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 0.5 }}>Sync: {countdown}s</Text>
               </View>
@@ -438,17 +462,10 @@ export default function Landing({ navigation }: Props) {
               }
             ]}
           >
-            <TouchableOpacity style={styles.primaryBtn} onPress={handleSimulationPress}>
+            <TouchableOpacity style={styles.primaryBtn} onPress={handleTelemetryPress}>
               <View style={styles.btnContent}>
-                <Ionicons name="play" size={20} color={APP_CONFIG.colors.secondary} />
-                <Text style={styles.primaryBtnText}>Start Simulation</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.outlineBtn} onPress={() => setTelemetryModalVisible(true)}>
-              <View style={styles.btnContent}>
-                <Ionicons name="pulse" size={20} color={APP_CONFIG.colors.text.primary} />
-                <Text style={styles.outlineBtnText}>Telemetry</Text>
+                <Ionicons name="pulse" size={20} color={APP_CONFIG.colors.secondary} />
+                <Text style={styles.primaryBtnText}>View Telemetry</Text>
               </View>
             </TouchableOpacity>
           </Animated.View>
@@ -494,7 +511,7 @@ export default function Landing({ navigation }: Props) {
           >
             <View style={styles.footerContent}>
               <Ionicons name="shield-checkmark" size={20} color={APP_CONFIG.colors.success} />
-              <Text style={styles.footerText}>Powered by Aditya-L1 | Solar Particle Monitoring System</Text>
+              <Text style={styles.footerText}>On-Call Command Pager | Aditya-L1</Text>
             </View>
           </Animated.View>
         </ScrollView>
@@ -562,6 +579,31 @@ export default function Landing({ navigation }: Props) {
           </View>
         </View>
       </Modal>
+
+      {/* Emergency Alert Modal (Automated based on live data) */}
+      <Modal visible={(liveData.cme_alert || liveData.alert_level === 'HIGH') && !hasAcknowledgedAlert} animationType="fade" transparent={true} onRequestClose={() => setHasAcknowledgedAlert(true)}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(255, 0, 0, 0.4)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <View style={{ backgroundColor: '#1a0000', padding: 30, borderRadius: 20, borderWidth: 2, borderColor: '#ff0000', alignItems: 'center', width: '100%', ...APP_CONFIG.shadows.heavy }}>
+            <Ionicons name="warning" size={80} color="#ff3333" />
+            <Text style={{ color: '#ff3333', fontSize: 26, fontWeight: 'bold', marginTop: 15, textAlign: 'center' }}>CRITICAL ALERT</Text>
+            <Text style={{ color: '#ffffff', fontSize: 18, marginTop: 15, fontWeight: 'bold' }}>{liveData.cme_class !== 'None' ? `${liveData.cme_class} Solar Flare Forecasted` : 'Solar Flare Forecasted'}</Text>
+            
+            <View style={{ width: '100%', marginVertical: 20, padding: 15, backgroundColor: 'rgba(255,0,0,0.1)', borderRadius: 10 }}>
+              <Text style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: 16, marginBottom: 8 }}>Confidence: <Text style={{ color: '#ff3333', fontWeight: 'bold' }}>{(liveData.flare_probability * 100).toFixed(1)}%</Text></Text>
+              <Text style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: 16, marginBottom: 8 }}>Primary Instrument: <Text style={{ color: '#fff', fontWeight: 'bold' }}>HEL1OS</Text></Text>
+              <Text style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: 16 }}>Impact Window: <Text style={{ color: '#fff', fontWeight: 'bold' }}>T-Minus 14m</Text></Text>
+            </View>
+
+            <TouchableOpacity 
+              style={{ marginTop: 10, backgroundColor: '#ff0000', paddingHorizontal: 30, paddingVertical: 15, borderRadius: 30, width: '100%' }}
+              onPress={() => setHasAcknowledgedAlert(true)}
+            >
+              <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16, textAlign: 'center' }}>ACKNOWLEDGE</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
     </ParticleBackground>
   );
 }
@@ -582,7 +624,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingTop: APP_CONFIG.spacing.sm,
     paddingHorizontal: APP_CONFIG.spacing.lg,
-    paddingBottom: 60,
+    paddingBottom: 100, // Extra padding so floating navbar doesn't cover content
   },
   header: {
     flexDirection: 'row',
@@ -857,22 +899,27 @@ const styles = StyleSheet.create({
     marginLeft: APP_CONFIG.spacing.sm,
   },
   statusBadge: {
-    backgroundColor: APP_CONFIG.colors.success,
-    padding: APP_CONFIG.spacing.xs,
-    borderRadius: APP_CONFIG.borderRadius.sm,
+    backgroundColor: APP_CONFIG.colors.success + '20',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
     marginLeft: APP_CONFIG.spacing.sm,
+    borderWidth: 1,
+    borderColor: APP_CONFIG.colors.success + '50',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: APP_CONFIG.colors.secondary,
-    marginRight: APP_CONFIG.spacing.xs,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: APP_CONFIG.colors.success,
+    marginRight: 4,
   },
   statusText: {
-    fontSize: 14,
+    fontSize: 10,
     fontWeight: 'bold',
-    color: APP_CONFIG.colors.secondary,
+    color: APP_CONFIG.colors.success,
   },
   missionDetails: {
     marginTop: APP_CONFIG.spacing.sm,
@@ -919,9 +966,12 @@ const styles = StyleSheet.create({
   },
   alertBadge: {
     backgroundColor: APP_CONFIG.colors.warning,
-    paddingHorizontal: APP_CONFIG.spacing.sm,
-    paddingVertical: APP_CONFIG.spacing.xs,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: APP_CONFIG.borderRadius.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
   alertBadgeText: {
     fontSize: 12,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StatusBar,
   Image,
+  Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -29,7 +30,8 @@ const blogArticles = [
     date: 'Sep 2025',
     readTime: 'Research Paper',
     category: 'SoLEXS',
-    image: require('../../assets/screenshot2.png'),
+    image: require('../../assets/solexs.png'),
+    url: 'https://arxiv.org/abs/2509.26292',
   },
   {
     id: '2',
@@ -39,7 +41,8 @@ const blogArticles = [
     date: 'Dec 2025',
     readTime: 'Research Paper',
     category: 'HEL1OS',
-    image: require('../../assets/screenshot3.png'),
+    image: require('../../assets/hel1os.png'),
+    url: 'https://arxiv.org/pdf/2512.12679',
   },
   {
     id: '3',
@@ -49,7 +52,8 @@ const blogArticles = [
     date: 'May 2025',
     readTime: 'Research Paper',
     category: 'Analysis',
-    image: require('../../assets/screenshot1.png'),
+    image: require('../../assets/iron_fluorescence.png'),
+    url: 'https://link.springer.com/journal/11207',
   },
   {
     id: '4',
@@ -59,19 +63,28 @@ const blogArticles = [
     date: 'Jan 2026',
     readTime: '5 min read',
     category: 'CME',
-    image: require('../../assets/screenshot4.png'),
+    image: require('../../assets/graph_01.png'),
+    url: 'https://www.isro.gov.in/Aditya_L1.html',
   },
 ];
 
 export default function BlogScreen({ navigation }: Props) {
+  const [activeCategory, setActiveCategory] = useState('All');
+
+  const filteredArticles = activeCategory === 'All' 
+    ? blogArticles.slice(1) 
+    : blogArticles.slice(1).filter(a => a.category === activeCategory);
   const handleArticlePress = (articleId: string) => {
     logger.info('Article pressed', { articleId }, 'BlogScreen');
-    // TODO: Navigate to article detail page
+    const article = blogArticles.find(a => a.id === articleId);
+    if (article && article.url) {
+      Linking.openURL(article.url).catch(err => console.error("Couldn't load page", err));
+    }
   };
 
   const handleCategoryFilter = (category: string) => {
     logger.info('Category filter pressed', { category }, 'BlogScreen');
-    // TODO: Filter articles by category
+    setActiveCategory(category);
   };
 
   const handleTabPress = (tab: string) => {
@@ -125,7 +138,10 @@ export default function BlogScreen({ navigation }: Props) {
           showBackButton={true}
           onBackPress={handleBackPress}
         />
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent} 
+          showsVerticalScrollIndicator={false}
+        >
           {/* Featured Article */}
           <View style={styles.featuredSection}>
             <Text style={styles.sectionTitle}>Featured Article</Text>
@@ -146,10 +162,10 @@ export default function BlogScreen({ navigation }: Props) {
               {['All', 'SoLEXS', 'HEL1OS', 'Analysis', 'CME'].map((category) => (
                 <TouchableOpacity
                   key={category}
-                  style={styles.categoryChip}
+                  style={[styles.categoryChip, activeCategory === category && { backgroundColor: APP_CONFIG.colors.primary }]}
                   onPress={() => handleCategoryFilter(category)}
                 >
-                  <Text style={styles.categoryChipText}>{category}</Text>
+                  <Text style={[styles.categoryChipText, activeCategory === category && { color: '#ffffff' }]}>{category}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -158,9 +174,12 @@ export default function BlogScreen({ navigation }: Props) {
           {/* Latest Articles */}
           <View style={styles.articlesSection}>
             <Text style={styles.sectionTitle}>Latest Articles</Text>
-            {blogArticles.slice(1).map(renderArticle)}
+            {filteredArticles.map(renderArticle)}
           </View>
         </ScrollView>
+
+        {/* Floating Navbar */}
+        <FloatingNavbar activeTab="blog" onTabPress={handleTabPress} />
       </SafeAreaView>
     </ParticleBackground>
   );
@@ -171,7 +190,7 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   scrollContent: {
     paddingHorizontal: APP_CONFIG.spacing.lg,
-    paddingBottom: APP_CONFIG.spacing.lg,
+    paddingBottom: 100, // Extra padding so floating navbar doesn't cover content
   },
   featuredSection: {
     marginBottom: APP_CONFIG.spacing.xl,

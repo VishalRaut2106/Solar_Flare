@@ -21,15 +21,7 @@ const Welcome = () => {
     navigation.navigate('Landing');
   };
 
-  const handleGoogleSignIn = () => {
-    logger.info('Google sign in pressed', {}, 'Welcome');
-    // TODO: Implement Google sign in
-  };
 
-  const handleFacebookSignIn = () => {
-    logger.info('Facebook sign in pressed', {}, 'Welcome');
-    // TODO: Implement Facebook sign in
-  };
 
   return (
     <ParticleBackground>
@@ -37,22 +29,16 @@ const Welcome = () => {
         <Text style={styles.logoText}>{APP_CONFIG.name}</Text>
 
         <Text style={styles.mainHeading}>
-          <Text style={styles.bold}>Simulate</Text> Solar {'\n'}
-          <Text style={styles.bold}>Events</Text> and Explore {'\n'}
-          Real-Time <Text style={styles.bold}>CME Data</Text>
+          <Text style={styles.bold}>Forecast</Text> Solar {'\n'}
+          <Text style={styles.bold}>Flares</Text> and Analyze {'\n'}
+          Real-Time <Text style={styles.bold}>X-ray Data</Text>
         </Text>
 
         <Text style={styles.subText}>
-          Experience our visualization of Coronal Mass Ejections (CMEs) based on real particle data from the SWIS-ASPEX payload aboard Aditya-L1. Dive into interactive solar event simulations, insights, and tools designed for space weather researchers and enthusiasts.
+          Experience our AI digital twin processing proxy X-ray data to emulate Aditya-L1's SoLEXS and HEL1OS payloads. Dive into deep-learning nowcasting tools designed for modern space weather forecasting.
         </Text>
 
         <View style={styles.authRow}>
-          <TouchableOpacity style={styles.iconButton} onPress={handleGoogleSignIn}>
-            <FontAwesome name="google" size={20} color={APP_CONFIG.colors.text.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton} onPress={handleFacebookSignIn}>
-            <FontAwesome name="facebook" size={20} color={APP_CONFIG.colors.text.primary} />
-          </TouchableOpacity>
           <TouchableOpacity
             style={styles.letsGo}
             onPress={handleStartExploring}
@@ -60,10 +46,6 @@ const Welcome = () => {
             <Text style={styles.letsGoText}>Start Exploring</Text>
           </TouchableOpacity>
         </View>
-
-        <Text style={styles.signupText}>
-          Don't have an account? <Text style={styles.link}>Sign Up</Text>
-        </Text>
       </View>
     </ParticleBackground>
   );
@@ -117,7 +99,7 @@ const styles = StyleSheet.create({
   },
   letsGo: {
     backgroundColor: APP_CONFIG.colors.text.primary,
-    width: '70%',
+    width: '100%',
     alignItems: 'center',
     paddingVertical: APP_CONFIG.spacing.md,
     paddingHorizontal: APP_CONFIG.spacing.xl,

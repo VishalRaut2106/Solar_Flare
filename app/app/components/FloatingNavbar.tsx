@@ -91,15 +91,7 @@ export default function FloatingNavbar({ activeTab, onTabPress }: FloatingNavbar
         }
       ]}
     >
-      <LinearGradient
-        colors={[
-          'rgba(0, 0, 0, 0.95)', // Dark with high transparency
-          'rgba(26, 10, 46, 0.9)', // Purple with transparency
-          'rgba(22, 33, 62, 0.85)'  // Blue with transparency
-        ]}
-        style={styles.gradientContainer}
-      >
-        <BlurView intensity={30} tint="dark" style={styles.blurContainer}>
+      <View style={styles.solidContainer}>
           {tabs.map((tab, index) => {
             const isActive = activeTab === tab.id;
             const scale = animatedValues[index].interpolate({
@@ -134,7 +126,7 @@ export default function FloatingNavbar({ activeTab, onTabPress }: FloatingNavbar
                     <Ionicons 
                       name={isActive ? tab.activeIcon : tab.inactiveIcon} 
                       size={24} 
-                      color={isActive ? APP_CONFIG.colors.secondary : APP_CONFIG.colors.text.secondary} 
+                      color={isActive ? APP_CONFIG.colors.accent : APP_CONFIG.colors.text.secondary} 
                     />
                     {isActive && (
                       <Animated.View 
@@ -157,8 +149,7 @@ export default function FloatingNavbar({ activeTab, onTabPress }: FloatingNavbar
               </Animated.View>
             );
           })}
-        </BlurView>
-      </LinearGradient>
+      </View>
     </Animated.View>
   );
 }
@@ -171,18 +162,17 @@ const styles = StyleSheet.create({
     right: 20,
     zIndex: 1000,
   },
-  gradientContainer: {
-    borderRadius: APP_CONFIG.borderRadius.xl,
-    overflow: 'hidden',
-    ...APP_CONFIG.shadows.heavy,
-  },
-  blurContainer: {
+  solidContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: APP_CONFIG.spacing.sm,
     paddingHorizontal: APP_CONFIG.spacing.sm,
+    backgroundColor: '#121212', // Solid dark color
     borderRadius: APP_CONFIG.borderRadius.xl,
+    borderWidth: 1,
+    borderColor: '#333333',
+    ...APP_CONFIG.shadows.heavy,
   },
   tabContainer: {
     alignItems: 'center',
@@ -196,8 +186,7 @@ const styles = StyleSheet.create({
     minWidth: 60,
   },
   activeTab: {
-    backgroundColor: APP_CONFIG.colors.text.primary,
-    ...APP_CONFIG.shadows.medium,
+    backgroundColor: 'rgba(0, 198, 255, 0.1)', // Subtle accent background instead of solid white
   },
   iconContainer: {
     position: 'relative',
@@ -206,13 +195,10 @@ const styles = StyleSheet.create({
   },
   activeIndicator: {
     position: 'absolute',
-    top: -4,
-    right: -4,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: APP_CONFIG.colors.success,
-    borderWidth: 2,
-    borderColor: APP_CONFIG.colors.text.primary,
+    bottom: -8, // Move indicator to bottom instead of floating on top right
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: APP_CONFIG.colors.accent, // Cyan dot
   },
 }); 

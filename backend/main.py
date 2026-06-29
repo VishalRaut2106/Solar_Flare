@@ -6,6 +6,8 @@ import random
 import pandas as pd
 import numpy as np
 import torch
+# Limit PyTorch threads to reduce RAM usage on free tier servers
+torch.set_num_threads(1)
 import torch.nn as nn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -104,12 +106,13 @@ def fetch_live_data():
     global alert_data
     print(f"[{datetime.datetime.now()}] Fetching live NOAA GOES data...")
     try:
-        url = "https://services.swpc.noaa.gov/json/goes/primary/xrays-1-day.json"
-        response = requests.get(url, timeout=10)
+        url = "https://services.swpc.noaa.gov/json/goes/primary/xrays-6-hour.json"
+        response = requests.get(url, timeout=(5, 15))
         data = response.json()
         
         # NOAA gives short (hard X-rays equivalent) and long (soft X-rays equivalent)
-        df = pd.DataFrame(data)
+        # We only need the last 2 hours (approx 240 items), truncate to save RAM
+        df = pd.DataFrame(data[-300:])
         df['time'] = pd.to_datetime(df['time_tag'])
         
         # Split by energy band
@@ -148,14 +151,25 @@ def fetch_live_data():
         alert_level = 'HIGH' if flare_prob > 0.7 else ('MEDIUM' if flare_prob > 0.4 else 'LOW')
         timestamp = fused['time'].iloc[-1].strftime('%Y-%m-%d %H:%M:%S UTC')
         
-        # Physics Simulation
-        sim_state["swis_speed"] = max(300.0, min(800.0, sim_state["swis_speed"] + random.uniform(-10.0, 10.0)))
-        sim_state["aspex_flux"] = max(1e7, min(1e9, sim_state["aspex_flux"] + random.uniform(-0.2e8, 0.2e8)))
-        sim_state["papa_density"] = max(1.0, min(20.0, sim_state["papa_density"] + random.uniform(-0.5, 0.5)))
-        sim_state["suit_uv"] = max(0.5, min(3.0, sim_state["suit_uv"] + random.uniform(-0.1, 0.1)))
+        # Realistic Physics-Coupled Simulator (No Randomness)
+        # If flare probability is high, simulate an incoming CME by ramping up secondary payloads
+        target_swis = 400.0 + (flare_prob * 400.0)
+        target_aspex = 1e7 + (flare_prob * 8e8)
+        target_papa = 3.0 + (flare_prob * 15.0)
+        target_suit = 1.0 + (flare_prob * 2.0)
+        
+        # Smoothly interpolate towards target to mimic natural physical acceleration
+        sim_state["swis_speed"] += (target_swis - sim_state["swis_speed"]) * 0.1
+        sim_state["aspex_flux"] += (target_aspex - sim_state["aspex_flux"]) * 0.1
+        sim_state["papa_density"] += (target_papa - sim_state["papa_density"]) * 0.1
+        sim_state["suit_uv"] += (target_suit - sim_state["suit_uv"]) * 0.1
         
         cme_alert = True if flare_prob > 0.3 else False
         cme_class = "X-Class" if flare_prob > 0.7 else ("M-Class" if flare_prob > 0.4 else ("C-Class" if flare_prob > 0.2 else "None"))
+        
+        # Deterministic Trending Logic
+        mag_field_change = round(flare_prob * 5.0, 1)
+        mag_trend = True if flare_prob > 0.3 else False
         
         alert_data.update({
             "timestamp": timestamp,
@@ -170,7 +184,7 @@ def fetch_live_data():
                 "suit_uv": round(sim_state["suit_uv"], 2)
             },
             "trending": [
-                {"id": "1", "name": "Magnetic Field", "change": f"{'↑' if random.random() > 0.5 else '↓'} {round(random.uniform(0.1, 5.0), 1)} nT", "trendUp": True},
+                {"id": "1", "name": "Magnetic Field", "change": f"{'↑' if mag_trend else '↓'} {mag_field_change} nT", "trendUp": mag_trend},
                 {"id": "2", "name": "Solar Wind", "change": f"{'↑' if sim_state['swis_speed'] > 450 else '↓'} {round(sim_state['swis_speed'], 1)} km/s", "trendUp": (sim_state["swis_speed"] > 450)},
                 {"id": "3", "name": "Particle Density", "change": f"{'↑' if sim_state['papa_density'] > 5.4 else '↓'} {round(sim_state['papa_density'], 1)} cm³", "trendUp": (sim_state["papa_density"] > 5.4)}
             ]
@@ -203,9 +217,15 @@ def fetch_live_data():
         plt.legend(loc='upper right', frameon=True, facecolor='#121212', edgecolor='#333')
         plt.tight_layout(pad=1.5)
         plt.savefig('lightcurve.png', dpi=300, facecolor='#121212')
-        plt.close()
+        plt.clf()
+        plt.close('all')
         
         print(f"Update successful! Prob: {flare_prob:.2%}, Alert: {alert_level}")
+        
+        # Aggressive memory cleanup
+        import gc
+        del df, df_short, df_long, fused, recent, tensor_input, probs
+        gc.collect()
         
     except Exception as e:
         print(f"Error fetching live data: {e}")

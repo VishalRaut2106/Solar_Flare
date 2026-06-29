@@ -21,6 +21,7 @@ import { APP_CONFIG } from '../utils/constants';
 import { API_CONFIG, isApiConfigured, buildSearchUrl } from '../utils/apiConfig';
 import { logger } from '../utils/logger';
 import Header from '../components/Header';
+import FloatingNavbar from '../components/FloatingNavbar';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types/navigation';
 import { localSolarLLM } from '../utils/localLLM';
@@ -391,6 +392,21 @@ export default function ChatbotScreen({ navigation }: Props) {
     navigation.goBack();
   };
 
+  const handleTabPress = (tab: string) => {
+    logger.info('Tab pressed', { tab }, 'ChatbotScreen');
+    switch (tab) {
+      case 'home':
+        navigation.navigate('Landing');
+        break;
+      case 'blog':
+        navigation.navigate('Blog');
+        break;
+      case 'chatbot':
+        // Already on chatbot
+        break;
+    }
+  };
+
   const handleModeSwitch = (mode: ResponseMode) => {
     setResponseMode(mode);
     logger.info('Response mode changed', { mode }, 'ChatbotScreen');
@@ -597,6 +613,9 @@ export default function ChatbotScreen({ navigation }: Props) {
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
+
+        {/* Floating Navbar */}
+        <FloatingNavbar activeTab="chatbot" onTabPress={handleTabPress} />
       </SafeAreaView>
     </LinearGradient>
   );
@@ -738,6 +757,7 @@ const styles = StyleSheet.create({
     borderRadius: APP_CONFIG.borderRadius.xl,
     padding: APP_CONFIG.spacing.sm,
     marginTop: APP_CONFIG.spacing.md,
+    marginBottom: 90, // Pushes it above the floating navbar
     ...APP_CONFIG.shadows.medium,
   },
   textInput: {
