@@ -113,7 +113,8 @@ def fetch_live_data():
         # NOAA gives short (hard X-rays equivalent) and long (soft X-rays equivalent)
         # We only need the last 2 hours (approx 240 items), truncate to save RAM
         df = pd.DataFrame(data[-300:])
-        df['time'] = pd.to_datetime(df['time_tag'])
+        # Convert UTC from NOAA to Indian Standard Time (IST) for the dashboard
+        df['time'] = pd.to_datetime(df['time_tag'], utc=True).dt.tz_convert('Asia/Kolkata')
         
         # Split by energy band
         df_short = df[df['energy'] == '0.05-0.4nm'].rename(columns={'flux': 'hard_flux'})[['time', 'hard_flux']]
