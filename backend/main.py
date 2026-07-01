@@ -34,7 +34,7 @@ def root():
             <p style="color: #aaa; margin-bottom: 30px;">This is the digital twin inference engine for Aditya-L1 telemetry.</p>
             
             <div style="margin: 30px 0;">
-                <a href="https://expo.dev/artifacts/eas/P7pddWprVkWXU4Rsa1hrO6wkSEO7opaaiUkM-IJh3RI.apk" style="display: inline-block; background-color: #00ffcc; color: #121212; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 24px; margin: 10px; font-family: sans-serif;">↓ Download Android APK</a>
+                <a href="https://expo.dev/artifacts/eas/b8ajqX1zhe7ZOAHY5L4ev103_Dm0PAc9Wck8IheNAoQ.apk" style="display: inline-block; background-color: #00ffcc; color: #121212; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 24px; margin: 10px; font-family: sans-serif;">↓ Download Android APK</a>
                 <a href="https://github.com/VishalRaut2106/Solar_Flare" style="display: inline-block; background-color: #2b3137; color: #fff; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 24px; margin: 10px; font-family: sans-serif;">View Source on GitHub</a>
             </div>
 
